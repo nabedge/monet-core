@@ -1,6 +1,7 @@
 package org.mixer2.monet.core;
 
 import java.io.InputStream;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
@@ -9,7 +10,13 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 public class PluginLoader {
 
-    protected XMLConfiguration config = new XMLConfiguration();
+    protected XMLConfiguration monetConfig = new XMLConfiguration();
+
+    protected LinkedHashMap<Plugin,PluginConfig> pluginMap = new LinkedHashMap<Plugin,PluginConfig>();
+
+    public LinkedHashMap<Plugin,PluginConfig> getPluginMap() {
+        return pluginMap;
+    }
 
     public void init() throws ConfigurationException {
         InputStream inputStream = getClass().getResourceAsStream("/monet.xml");
@@ -19,13 +26,35 @@ public class PluginLoader {
         // TODO クラスパス直下にない場合は monet.configration プロパティで指定されたフルパスから探す
 
         // load setting
-        config.load(inputStream);
-        List<HierarchicalConfiguration> plugins = config.configurationsAt("plugins.plugin");
-        for (HierarchicalConfiguration plugin : plugins) {
-            String className = plugin.getString("[@class]");
-            System.out.println(className);
-            List<HierarchicalConfiguration> filesets = plugin.configurationsAt("fileset");
-            System.out.println(filesets.size());
+        monetConfig.load(inputStream);
+
+        /*
+        pluginタグはfilesetタグを1個以上持つ。
+        filesetタグはinclude,includesfile,exclude,excludesfileタグを0個以上持つ
+         */
+
+        List<HierarchicalConfiguration> plugins = monetConfig.configurationsAt("plugins.plugin");
+
+        for (HierarchicalConfiguration pluginConfig : plugins) {
+            String className = pluginConfig.getString("[@class]");
+            XMLConfiguration XMLPluginConfig = new XMLConfiguration(pluginConfig);
+            Plugin plugin = null;
+            try {
+                plugin = (Plugin) Class.forName(className).newInstance();
+            } catch (InstantiationException e) {
+                //TODO log
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                //TODO log
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                //TODO log
+                e.printStackTrace();
+            } finally {
+                if (plugin != null) {
+                    pluginMap.put(plugin, new PluginConfig(XMLPluginConfig));
+                }
+            }
         }
     }
 

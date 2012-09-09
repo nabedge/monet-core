@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <monet>
 	<plugins>
-		<plugin class="org.mixer2.monet.core.HelloWorldPlugin">
-			<fileset dir="/**/*.html">
-				<exclude name="/**/foo.html" />
-			</fileset>
+		<plugin class="org.mixer2.monet.core.plugin.HelloWorldPlugin">
+			<pluginConfig>
+				<fileset dir="/**/*.html">
+					<exclude name="/**/foo.html" />
+				</fileset>
+			</pluginConfig>
 		</plugin>
-		<plugin class="org.mixer2.monet.core.aaaaaaaaa">
-			<fileset dir="/**/*.html">
-				<exclude name="/**/foo.html" />
-			</fileset>
-			<fileset dir="/**/*.html">
-				<exclude name="/**/foo.html" />
-			</fileset>
-		</plugin>
+		<!-- <plugin class="org.mixer2.monet.core.aaaaaaaaa"> -->
+		<!-- <fileset dir="/**/*.html"> -->
+		<!-- <exclude name="/**/foo.html" /> -->
+		<!-- </fileset> -->
+		<!-- <fileset dir="/**/*.html"> -->
+		<!-- <exclude name="/**/foo.html" /> -->
+		<!-- </fileset> -->
+		<!-- </plugin> -->
 	</plugins>
 </monet>
